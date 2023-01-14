@@ -9,6 +9,14 @@ public class SignUpDto {
     private String password;
 	
 
+    public SignUpDto(String firstName, String lastName, String email, String username, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
     public String getFirstName() {
         return this.firstName;
     }

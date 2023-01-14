@@ -2,11 +2,14 @@ package com.proj.api.service;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.proj.api.user.ApiResponse;
 import com.proj.api.user.LoginDto;
+
 import com.proj.api.user.SignUpDto;
 import com.proj.api.user.User;
 import com.proj.api.user.UserDao;
@@ -25,28 +28,37 @@ public class UserServiceImpl implements UserService {
     private UserDaoImpl userDaoImpl;
 
     @Override
-    public ApiResponse signUp(SignUpDto signUpDto) {
-        validateSignUp(signUpDto);
-        User user = new User();
-        //can use Bcrypt
-        BeanUtils.copyProperties(signUpDto, user);
-        userDaoImpl.save(user);
-        return new ApiResponse(200, "success", user);
+    public ResponseEntity<String> signUp(SignUpDto signUpDto) {
+        try{
+               validateSignUp(signUpDto);
+               User user = new User();
+              //can use Bcrypt
+             BeanUtils.copyProperties(signUpDto, user);
+             userDaoImpl.save(user);
+            return new ResponseEntity<String>("Sign up success",HttpStatus.OK);
+       } catch(Exception e){
+           return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
     }
-
+    }
     @Override
-    public ApiResponse login(LoginDto loginDto) {
+    public ResponseEntity<String> login(LoginDto loginDto) {
         User user = userDao.findByUsername(loginDto.getUsername());
         if(user == null) {
-            throw new RuntimeException("User does not exist.");
+            return new ResponseEntity<String>("Login failed.",HttpStatus.NOT_FOUND);
+
         }
         if(!user.getPassword().equals(loginDto.getPassword())){
-            throw new RuntimeException("Password mismatch.");
+            return new ResponseEntity<String>("Login failed.",HttpStatus.NOT_FOUND);
         }
-        return new ApiResponse(200, "Login success", null) ;
+        return new ResponseEntity<String>("Login success",HttpStatus.OK);
 
     }
-
-    private void validateSignUp(SignUpDto signUpDto) {
+    private void validateSignUp(SignUpDto signUpDto) throws Exception {
+        if(signUpDto.getUsername() == null) {
+            throw new Exception("user required.");
+        }
+        if(signUpDto.getPassword() == null) {
+            throw new Exception("password required.");
+        }
     }
 }
