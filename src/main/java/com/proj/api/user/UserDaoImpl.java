@@ -2,11 +2,11 @@ package com.proj.api.user;
 
 import javax.persistence.EntityManager;
 
-
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import jakarta.websocket.Session;
+
 
 @Repository
 public class UserDaoImpl {
