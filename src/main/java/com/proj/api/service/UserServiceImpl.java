@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.proj.api.user.ApiResponse;
+import com.proj.api.user.DeleteDto;
 import com.proj.api.user.LoginDto;
-
 import com.proj.api.user.SignUpDto;
+
 import com.proj.api.user.User;
 import com.proj.api.user.UserDao;
 import com.proj.api.user.UserDaoImpl;
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
         try{
                validateSignUp(signUpDto);
                User user = new User();
-              //can use Bcrypt
+
              BeanUtils.copyProperties(signUpDto, user);
              userDaoImpl.save(user);
             return new ResponseEntity<String>("Sign up success",HttpStatus.OK);
@@ -44,11 +44,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<String> login(LoginDto loginDto) {
         User user = userDao.findByUsername(loginDto.getUsername());
         if(user == null) {
-            return new ResponseEntity<String>("Login failed.",HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Login failed wrong username.",HttpStatus.NOT_FOUND);
 
         }
         if(!user.getPassword().equals(loginDto.getPassword())){
-            return new ResponseEntity<String>("Login failed.",HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>("Login failed wrong password.",HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>("Login success",HttpStatus.OK);
 
@@ -60,5 +60,19 @@ public class UserServiceImpl implements UserService {
         if(signUpDto.getPassword() == null) {
             throw new Exception("password required.");
         }
+    }
+    @Override
+    public ResponseEntity<String> Delete(DeleteDto deletedto) {
+        User user = userDao.findByUsername(deletedto.getUsername());
+        if(user == null) {
+            return new ResponseEntity<String>("Delete failed wrong username.",HttpStatus.NOT_FOUND);
+
+        }
+        if(!user.getPassword().equals(deletedto.getPassword())){
+            return new ResponseEntity<String>("Delete failed wrong password.",HttpStatus.NOT_FOUND);
+        }else{
+            userDaoImpl.delete(user);
+        }
+        return new ResponseEntity<String>("Delete success",HttpStatus.OK);
     }
 }

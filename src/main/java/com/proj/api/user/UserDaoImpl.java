@@ -19,4 +19,8 @@ public class UserDaoImpl {
         ((EntityManager) session).persist(user);
         return user;
     }
+    public void delete(User user){
+        Session session = em.unwrap(Session.class);
+        ((EntityManager) session).remove(user);
+    }
 }
